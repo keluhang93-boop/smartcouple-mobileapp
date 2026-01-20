@@ -1,0 +1,7 @@
+{
+  "name": "Smart Couple Mobile App",
+  "description": "Une application mobile élégante pour aider les couples à gérer leurs finances, leur emploi du temps et leur intelligence émotionnelle.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
