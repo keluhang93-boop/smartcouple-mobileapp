@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ViewType, UserSettings, Expense, CalendarEvent, SavingGoal, GroceryItem, Debt } from './types';
 import HomeView from './views/HomeView';
@@ -42,6 +41,7 @@ const App: React.FC = () => {
       choreHistory: [],
       lastResetDate: lastMonday,
       enableDebts: true,
+      enableSmartPartage: false, // Locked by default as requested
       showDebtWarning: true,
       notifyPartnerExpense: true,
       notifyTaskDue: true,
@@ -133,7 +133,7 @@ const App: React.FC = () => {
       <main className="mt-16 flex-1 flex flex-col w-full max-w-lg mx-auto overflow-y-auto no-scrollbar">
         {renderContent()}
       </main>
-      <BottomNav activeView={activeView} setActiveView={setActiveView} />
+      <BottomNav activeView={activeView} setActiveView={setActiveView} settings={settings} />
     </div>
   );
 };

@@ -107,6 +107,7 @@ export interface UserSettings {
   choreHistory: ChoreHistoryEntry[];
   lastResetDate: string;
   enableDebts: boolean;
+  enableSmartPartage: boolean;
   showDebtWarning: boolean;
   notifyPartnerExpense: boolean;
   notifyTaskDue: boolean;

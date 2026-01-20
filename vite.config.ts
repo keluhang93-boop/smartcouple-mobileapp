@@ -1,6 +1,11 @@
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
+
+// Added fix: Define __dirname and __filename in an ESM environment
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
@@ -16,6 +21,7 @@ export default defineConfig(({ mode }) => {
       },
       resolve: {
         alias: {
+          // Fixed: '__dirname' is now available via the polyfill above
           '@': path.resolve(__dirname, '.'),
         }
       }

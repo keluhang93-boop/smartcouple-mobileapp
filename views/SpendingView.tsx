@@ -1,7 +1,6 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Expense, UserSettings, SpendingSubTab, SavingGoal, GroceryItem, Debt } from '../types';
-import { Plus, Trash2, PieChart, Landmark, ShoppingCart, TrendingDown, Handshake, X, Info, Heart, AlertCircle, ChevronRight, Check, Tag, List, Minus, RefreshCw, Maximize } from 'lucide-react';
+import { Plus, Trash2, PieChart, Landmark, ShoppingCart, TrendingDown, Handshake, X, Info, Heart, AlertCircle, ChevronRight, Check, Tag, List, Minus, RefreshCw, Maximize, HeartHandshake } from 'lucide-react';
 import { PieChart as RePieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 
 interface SpendingViewProps {
@@ -23,6 +22,7 @@ const SpendingView: React.FC<SpendingViewProps> = ({
   const [activeSubTab, setActiveSubTab] = useState<SpendingSubTab>('dépenses');
   const [activeGroceryList, setActiveGroceryList] = useState(settings.groceryLists[0] || 'Général');
   const [isAdding, setIsAdding] = useState(false);
+  const [localWarningHidden, setLocalWarningHidden] = useState(false);
   
   // States for Adding Items
   const [newItemName, setNewItemName] = useState('');
@@ -35,6 +35,13 @@ const SpendingView: React.FC<SpendingViewProps> = ({
 
   // Saving Modal State
   const [savingModal, setSavingModal] = useState<{ id: string, type: 'plus' | 'minus', value: string } | null>(null);
+
+  // Safety check: if debts tab is active but module is disabled, switch to expenses
+  useEffect(() => {
+    if (activeSubTab === 'dettes' && !settings.enableDebts) {
+      setActiveSubTab('dépenses');
+    }
+  }, [settings.enableDebts, activeSubTab]);
 
   const totalJean = expenses.reduce((sum, e) => sum + e.jean, 0);
   const totalMonique = expenses.reduce((sum, e) => sum + e.monique, 0);
@@ -51,7 +58,6 @@ const SpendingView: React.FC<SpendingViewProps> = ({
     } else if (type === 'max') {
       setSavings(savings.map(x => x.id === id ? { ...x, current: s.target } : x));
     } else {
-      // Triggering the custom modal for input
       setSavingModal({ id, type, value: '' });
     }
   };
@@ -209,6 +215,39 @@ const SpendingView: React.FC<SpendingViewProps> = ({
       case 'dettes':
         return (
           <div className="space-y-6 animate-in fade-in duration-300">
+             {settings.showDebtWarning && !localWarningHidden && (
+               <div className="bg-blue-50 border-2 border-blue-200 p-6 rounded-[2rem] shadow-sm relative overflow-hidden">
+                 <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                    <Heart size={80} />
+                 </div>
+                 <div className="flex items-start gap-4 mb-4">
+                    <div className="p-2 bg-blue-100 text-blue-600 rounded-xl">
+                       <Info size={20} />
+                    </div>
+                    <div className="space-y-3 text-xs text-blue-800 leading-relaxed text-justify">
+                       <p><strong>CET OUTIL EST CONÇU POUR VOUS AIDER À GÉRER VOS DÉPENSES INDIVIDUELLES.</strong></p>
+                       <p>Notre objectif est de vous accompagner vers une gestion financière saine et efficace. Cependant, n'oubliez jamais que la relation avec votre partenaire a bien plus de valeur que l'argent. Une relation épanouie et durable apporte un bien-être que l'argent ne pourra jamais acheter. L'être humain n'est pas qu'un agent économique ; c'est un être social qui a besoin d'aimer et d'être aimé.</p>
+                       <p><strong>L'AMOUR, ET NON L'ARGENT, EST INSCRIT DANS NOTRE ADN !</strong></p>
+                       <p>C'est pourquoi nous vous encourageons à faire preuve de flexibilité dans la gestion des comptes avec votre partenaire. Si la maîtrise du budget est indispensable pour avancer dans ce monde économique, la vie n'est réellement belle que lorsqu'elle est vécue avec amour.</p>
+                    </div>
+                 </div>
+                 <div className="flex gap-3">
+                    <button 
+                      onClick={() => setLocalWarningHidden(true)}
+                      className="flex-1 py-2.5 bg-white border border-blue-200 text-blue-600 rounded-xl text-[9px] font-bold uppercase tracking-widest active:scale-95 transition-transform"
+                    >
+                       Me rappeler plus tard
+                    </button>
+                    <button 
+                      onClick={() => setSettings(prev => ({ ...prev, showDebtWarning: false }))}
+                      className="flex-1 py-2.5 bg-blue-600 text-white rounded-xl text-[9px] font-bold uppercase tracking-widest active:scale-95 transition-transform"
+                    >
+                       Fermer pour toujours
+                    </button>
+                 </div>
+               </div>
+             )}
+
              <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col items-center">
               <div className="p-3 bg-[var(--secondary-color)]/10 rounded-full mb-4">
                 <Handshake size={24} className="text-[var(--secondary-color)]" />
@@ -260,18 +299,20 @@ const SpendingView: React.FC<SpendingViewProps> = ({
   };
 
   const subTabs = [
-    { id: 'dépenses', label: 'Dépenses', icon: <Landmark size={14} /> },
-    { id: 'économies', label: 'Épargne', icon: <TrendingDown size={14} className="rotate-180" /> },
-    { id: 'courses', label: 'Courses', icon: <ShoppingCart size={14} /> },
-    { id: 'dettes', label: 'Dettes', icon: <Handshake size={14} /> },
-    { id: 'analyse', label: 'Analyse', icon: <PieChart size={14} /> },
+    { id: 'dépenses', label: 'Dépenses', icon: <Landmark size={14} />, visible: true },
+    { id: 'économies', label: 'Épargne', icon: <TrendingDown size={14} className="rotate-180" />, visible: true },
+    { id: 'courses', label: 'Courses', icon: <ShoppingCart size={14} />, visible: true },
+    { id: 'dettes', label: 'Dettes', icon: <Handshake size={14} />, visible: settings.enableDebts },
+    { id: 'analyse', label: 'Analyse', icon: <PieChart size={14} />, visible: true },
   ];
+
+  const visibleSubTabs = subTabs.filter(tab => tab.visible !== false);
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-144px)] animate-in slide-in-from-right duration-500">
       <div className="sticky top-0 bg-white/95 backdrop-blur-md z-[100] py-4 px-4 border-b border-gray-100 shadow-sm">
         <div className="flex p-1 bg-gray-100 rounded-xl w-full">
-          {subTabs.map(tab => (
+          {visibleSubTabs.map(tab => (
             <button 
               key={tab.id} 
               onClick={() => setActiveSubTab(tab.id as SpendingSubTab)} 

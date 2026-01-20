@@ -1,7 +1,6 @@
-
 import React, { useState, useRef } from 'react';
 import { UserSettings } from '../types';
-import { Paintbrush, Wallet, TrendingUp, Tag, Plus, Trash2, ShoppingCart, Camera, Handshake, ChevronRight, Mail, Bell, CreditCard, User, LogOut, X, Palette, Check, Calendar, Mail as MailIcon } from 'lucide-react';
+import { Paintbrush, Wallet, TrendingUp, Tag, Plus, Trash2, ShoppingCart, Camera, Handshake, ChevronRight, Mail, Bell, CreditCard, User, LogOut, X, Palette, Check, Calendar, Mail as MailIcon, CheckSquare } from 'lucide-react';
 import { PRESET_COLORS, THEME_COLORS } from '../constants';
 
 interface ProfileViewProps {
@@ -172,6 +171,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({ settings, setSettings }) => {
           <h2 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest ml-4 mb-1">Fonctionnalités</h2>
           <div className="rounded-xl overflow-hidden shadow-sm">
             <ToggleRow icon={Handshake} label="Module de Dettes" value={settings.enableDebts} onToggle={() => updateSetting('enableDebts', !settings.enableDebts)} color="bg-slate-800" textColor="text-white" />
+            <ToggleRow icon={CheckSquare} label="Module de Smart Partage" value={settings.enableSmartPartage} onToggle={() => updateSetting('enableSmartPartage', !settings.enableSmartPartage)} color="bg-blue-600" textColor="text-white" />
             <ToggleRow icon={Bell} label="Notif. Partenaire" value={settings.notifyPartnerExpense} onToggle={() => updateSetting('notifyPartnerExpense', !settings.notifyPartnerExpense)} color="bg-red-500" textColor="text-white" />
           </div>
         </section>
