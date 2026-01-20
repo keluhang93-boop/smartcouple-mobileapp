@@ -1,157 +1,48 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Couple</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
-    <script type="importmap">
-    {
-      "imports": {
-        "react": "https://esm.sh/react@19.2.3",
-        "react-dom/client": "https://esm.sh/react-dom@19.2.3/client",
-        "lucide-react": "https://esm.sh/lucide-react@0.562.0",
-        "@google/genai": "https://esm.sh/@google/genai@1.37.0"
-      }
-    }
-    </script>
     <style>
-        body { font-family: 'Lato', sans-serif; -webkit-tap-highlight-color: transparent; }
-        h1, h2, h3, .font-serif { font-family: 'Playfair Display', serif; }
+        body {
+            font-family: 'Lato', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        h1, h2, h3, .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
         .gold-shine {
             background: linear-gradient(90deg, #D4AF37, #f7e08a, #D4AF37);
-            background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             animation: shine 3s linear infinite;
         }
         @keyframes shine { to { background-position: 200% center; } }
+        /* Hide scrollbars but keep functionality */
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        :root { --primary: #1f4e79; --secondary: #D4AF37; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
+<script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.37.0",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "recharts": "https://esm.sh/recharts@^3.6.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
 </head>
 <body class="bg-gray-50 text-slate-800">
     <div id="root"></div>
-
-    <script type="module">
-        import React, { useState, useEffect } from 'react';
-        import ReactDOM from 'react-dom/client';
-        import { Heart, Wallet, Calendar, Star, User, Home, CheckSquare, Plus, Send, RefreshCw, Trash2, TrendingUp } from 'lucide-react';
-
-        // --- GLOBAL CONFIGURATION (From your original constants/types) ---
-        const INITIAL_SETTINGS = {
-            p1Name: 'Jean', p2Name: 'Monique',
-            p1Income: 2500, p2Income: 2200,
-            currency: '€',
-            chores: [
-                { id: '1', title: 'Sortir les poubelles', points: 10 },
-                { id: '2', title: 'Vaisselle', points: 20 },
-                { id: '3', title: 'Ménage complet', points: 80 }
-            ]
-        };
-
-        function App() {
-            const [activeView, setActiveView] = useState('home');
-            const [settings, setSettings] = useState(INITIAL_SETTINGS);
-            const [points, setPoints] = useState({ p1: 45, p2: 30 });
-
-            // Financial Calculations
-            const totalIncome = settings.p1Income + settings.p2Income;
-            const p1Ratio = (settings.p1Income / totalIncome);
-            const p2Ratio = (settings.p2Income / totalIncome);
-
-            const renderHome = () => React.createElement('div', { className: 'space-y-6 animate-in fade-in duration-500' }, [
-                // Welcome Card
-                React.createElement('div', { className: 'bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden' }, [
-                    React.createElement('div', { className: 'relative z-10' }, [
-                        React.createElement('h2', { className: 'text-2xl font-serif mb-2' }, `Bonjour, ${settings.p1Name} & ${settings.p2Name}`),
-                        React.createElement('p', { className: 'text-white/60 italic' }, '"Le bonheur se cultive à deux."')
-                    ]),
-                    React.createElement('div', { className: 'absolute top-[-20%] right-[-10%] w-48 h-48 bg-white/5 rounded-full blur-3xl' })
-                ]),
-                // Prorata Stats
-                React.createElement('div', { className: 'bg-white p-6 rounded-[2rem] border shadow-sm' }, [
-                    React.createElement('h3', { className: 'text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4' }, 'Équilibre Financier (Prorata)'),
-                    React.createElement('div', { className: 'flex justify-between items-center' }, [
-                        React.createElement('div', null, [
-                            React.createElement('p', { className: 'text-xs text-gray-400 uppercase' }, settings.p1Name),
-                            React.createElement('p', { className: 'text-xl font-bold text-slate-800' }, `${(p1Ratio * 100).toFixed(0)}%`)
-                        ]),
-                        React.createElement('div', { className: 'h-1 flex-1 mx-4 bg-gray-100 rounded-full overflow-hidden' }, 
-                            React.createElement('div', { className: 'h-full bg-amber-400', style: { width: `${(p1Ratio * 100)}%` } })
-                        ),
-                        React.createElement('div', { className: 'text-right' }, [
-                            React.createElement('p', { className: 'text-xs text-gray-400 uppercase' }, settings.p2Name),
-                            React.createElement('p', { className: 'text-xl font-bold text-slate-800' }, `${(p2Ratio * 100).toFixed(0)}%`)
-                        ])
-                    ])
-                ])
-            ]);
-
-            const renderSpending = () => React.createElement('div', { className: 'space-y-4' }, [
-                React.createElement('h2', { className: 'text-2xl font-serif gold-shine' }, 'Smart Spending'),
-                React.createElement('div', { className: 'bg-white p-6 rounded-2xl border' }, [
-                    React.createElement('p', { className: 'text-sm mb-4' }, 'Exemple de répartition pour un loyer de 1000€ :'),
-                    React.createElement('div', { className: 'space-y-2' }, [
-                        React.createElement('div', { className: 'flex justify-between' }, [React.createElement('span', null, settings.p1Name), React.createElement('span', { className: 'font-bold' }, `${(1000 * p1Ratio).toFixed(2)} ${settings.currency}`)]),
-                        React.createElement('div', { className: 'flex justify-between' }, [React.createElement('span', null, settings.p2Name), React.createElement('span', { className: 'font-bold' }, `${(1000 * p2Ratio).toFixed(2)} ${settings.currency}`)])
-                    ])
-                ])
-            ]);
-
-            const renderShare = () => React.createElement('div', { className: 'space-y-4' }, [
-                React.createElement('h2', { className: 'text-2xl font-serif gold-shine' }, 'Smart Share'),
-                React.createElement('div', { className: 'grid grid-cols-2 gap-4' }, [
-                    React.createElement('div', { className: 'bg-white p-4 rounded-xl border text-center' }, [
-                        React.createElement('p', { className: 'text-xs uppercase text-gray-400' }, settings.p1Name),
-                        React.createElement('p', { className: 'text-3xl font-bold' }, points.p1)
-                    ]),
-                    React.createElement('div', { className: 'bg-white p-4 rounded-xl border text-center' }, [
-                        React.createElement('p', { className: 'text-xs uppercase text-gray-400' }, settings.p2Name),
-                        React.createElement('p', { className: 'text-3xl font-bold' }, points.p2)
-                    ])
-                ]),
-                React.createElement('div', { className: 'space-y-2 mt-6' }, settings.chores.map(chore => 
-                    React.createElement('div', { key: chore.id, className: 'flex justify-between items-center bg-white p-4 rounded-xl border' }, [
-                        React.createElement('span', { className: 'font-medium' }, chore.title),
-                        React.createElement('div', { className: 'flex gap-2' }, [
-                            React.createElement('button', { onClick: () => setPoints(p => ({...p, p1: p.p1 + chore.points})), className: 'bg-blue-50 text-blue-600 p-2 rounded-lg text-xs font-bold' }, settings.p1Name),
-                            React.createElement('button', { onClick: () => setPoints(p => ({...p, p2: p.p2 + chore.points})), className: 'bg-pink-50 text-pink-600 p-2 rounded-lg text-xs font-bold' }, settings.p2Name)
-                        ])
-                    ])
-                ))
-            ]);
-
-            return React.createElement('div', { className: 'max-w-md mx-auto bg-gray-50 min-h-screen pb-32' }, [
-                // Header
-                React.createElement('header', { className: 'h-16 flex flex-col items-center justify-center border-b bg-white/80 backdrop-blur-md sticky top-0 z-50' }, [
-                    React.createElement('span', { className: 'text-[10px] font-bold tracking-[0.2em] text-amber-600' }, 'SMART COUPLE'),
-                    React.createElement('span', { className: 'text-[9px] text-gray-400' }, 'Jean & Monique')
-                ]),
-                // View Content
-                React.createElement('main', { className: 'p-6' }, [
-                    activeView === 'home' && renderHome(),
-                    activeView === 'spending' && renderSpending(),
-                    activeView === 'share' && renderShare(),
-                    activeView === 'union' && React.createElement('div', { className: 'text-center py-20' }, 'Section Smart Union chargée.')
-                ]),
-                // Bottom Nav (From your BottomNav.tsx logic)
-                React.createElement('nav', { className: 'fixed bottom-0 left-0 right-0 bg-white border-t h-20 flex justify-around items-center px-4 shadow-lg' }, [
-                    {id: 'home', icon: Home}, {id: 'spending', icon: Wallet}, {id: 'share', icon: CheckSquare}, {id: 'union', icon: Heart}
-                ].map(tab => 
-                    React.createElement('button', { 
-                        key: tab.id,
-                        onClick: () => setActiveView(tab.id),
-                        className: `flex flex-col items-center p-2 transition-all ${activeView === tab.id ? 'text-amber-600 scale-110' : 'text-gray-300'}`
-                    }, [
-                        React.createElement(tab.icon, { size: 24 }),
-                        React.createElement('span', { className: 'text-[8px] mt-1 font-bold uppercase' }, tab.id)
-                    ])
-                ))
-            ]);
-        }
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(React.createElement(App));
-    </script>
+<script type="module" src="/index.tsx"></script>
 </body>
 </html>
