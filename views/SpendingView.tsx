@@ -25,12 +25,19 @@ const SpendingView: React.FC<SpendingViewProps> = ({
   const [activeGroceryList, setActiveGroceryList] = useState(settings.groceryLists[0] || 'Général');
   const [isAdding, setIsAdding] = useState(false);
 
-// Reset "ready" state when the tab changes to 'analyse'
+// Find your existing useEffect for 'analyse' and replace it with this:
 useEffect(() => {
   if (activeSubTab === 'analyse') {
+    // Force a "not ready" state
     setIsReady(false);
-    const timer = setTimeout(() => setIsReady(true), 150); // 150ms delay
-    return () => clearTimeout(timer);
+    // Use requestAnimationFrame to wait for the browser to paint the layout
+    const frame = requestAnimationFrame(() => {
+      const timer = setTimeout(() => setIsReady(true), 100);
+      return () => clearTimeout(timer);
+    });
+    return () => cancelAnimationFrame(frame);
+  } else {
+    setIsReady(false);
   }
 }, [activeSubTab]);
   
@@ -245,7 +252,7 @@ useEffect(() => {
             </div>
           </div>
         );
-    case 'analyse':
+   case 'analyse':
   const pieData = [
     { name: settings.p1Name, value: totalJean, color: 'var(--primary-color)' }, 
     { name: settings.p2Name, value: totalMonique, color: 'var(--secondary-color)' }
@@ -259,12 +266,11 @@ useEffect(() => {
 
   return (
     <div className="space-y-6 pb-10">
-      {/* Chart 1 */}
-      <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 min-h-[350px] flex flex-col items-center justify-center">
+      <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 min-h-[300px]">
         <h3 className="text-center font-bold text-slate-800 mb-4 text-[10px] uppercase tracking-widest text-gray-400">Répartition Globale</h3>
-        <div className="w-full" style={{ minWidth: '100%', height: 250 }}>
-            {/* We use a fixed height here to satisfy Recharts immediately */}
-            <ResponsiveContainer width="100%" height={250}>
+        <div className="w-full flex justify-center items-center" style={{ height: '250px' }}>
+          {isReady ? (
+            <ResponsiveContainer width="99%" height="100%">
               <RePieChart>
                 <Pie data={pieData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
                   {pieData.map((e, i) => <Cell key={`cell-${i}`} fill={e.color} />)}
@@ -273,14 +279,17 @@ useEffect(() => {
                 <Legend verticalAlign="bottom" />
               </RePieChart>
             </ResponsiveContainer>
+          ) : (
+            <div className="h-full w-full bg-gray-50 animate-pulse rounded-xl" />
+          )}
         </div>
       </div>
 
-      {/* Chart 2 */}
-      <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 min-h-[350px] flex flex-col items-center justify-center">
+      <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 min-h-[300px]">
         <h3 className="text-center font-bold text-slate-800 mb-4 text-[10px] uppercase tracking-widest text-gray-400">Par Catégorie</h3>
-        <div className="w-full" style={{ minWidth: '100%', height: 250 }}>
-            <ResponsiveContainer width="100%" height={250}>
+        <div className="w-full flex justify-center items-center" style={{ height: '250px' }}>
+          {isReady ? (
+            <ResponsiveContainer width="99%" height="100%">
               <BarChart data={barData} margin={{top:5, right:10, left: -20, bottom:5}}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9"/>
                 <XAxis dataKey="name" tick={{fontSize:10}} axisLine={false} tickLine={false} />
@@ -291,6 +300,9 @@ useEffect(() => {
                 <Bar dataKey="monique" name={settings.p2Name} fill="var(--secondary-color)" radius={[4, 4, 0, 0]} barSize={20} />
               </BarChart>
             </ResponsiveContainer>
+          ) : (
+            <div className="h-full w-full bg-gray-50 animate-pulse rounded-xl" />
+          )}
         </div>
       </div>
     </div>
