@@ -261,17 +261,44 @@ useEffect(() => {
            { name: 'Transport', jean: expenses.filter(e => e.category === 'Transport').reduce((s,x)=>s+x.jean,0), monique: expenses.filter(e => e.category === 'Transport').reduce((s,x)=>s+x.monique,0) },
         ].filter(d => d.jean > 0 || d.monique > 0);
         return (
-          <div className="space-y-6 pb-10">
-             <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-               <h3 className="text-center font-bold text-slate-800 mb-4 text-sm">Répartition Globale</h3>
-               <div className="h-56"><ResponsiveContainer width="100%" height="100%"><RePieChart><Pie data={pieData} cx="50%" cy="50%" innerRadius={50} outerRadius={70} paddingAngle={5} dataKey="value">{pieData.map((e, i) => <Cell key={i} fill={e.color} />)}</Pie><Tooltip /><Legend /></RePieChart></ResponsiveContainer></div>
-             </div>
-             <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-               <h3 className="text-center font-bold text-slate-800 mb-4 text-sm">Par Catégorie</h3>
-               <div className="h-56"><ResponsiveContainer width="100%" height="100%"><BarChart data={barData} margin={{top:5, right:5, left:0, bottom:5}}><CartesianGrid strokeDasharray="3 3" vertical={false}/><XAxis dataKey="name" tick={{fontSize:10}}/><YAxis tick={{fontSize:10}}/><Tooltip /><Legend /><Bar dataKey="jean" name={settings.p1Name} fill="var(--primary-color)" radius={[4, 4, 0, 0]} /><Bar dataKey="monique" name={settings.p2Name} fill="var(--secondary-color)" radius={[4, 4, 0, 0]} /></BarChart></ResponsiveContainer></div>
-             </div>
-          </div>
-        );
+            <div className="space-y-6 pb-10">
+              <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 min-h-[300px]">
+                <h3 className="text-center font-bold text-slate-800 mb-4 text-[10px] uppercase tracking-widest text-gray-400">
+                  Répartition Globale
+                </h3>
+                <SafeChartContainer>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RePieChart>
+                        <Pie data={pieData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
+                          {pieData.map((e, i) => <Cell key={`cell-${i}`} fill={e.color} />)}
+                        </Pie>
+                        <Tooltip />
+                        <Legend verticalAlign="bottom" />
+                      </RePieChart>
+                    </ResponsiveContainer>
+                </SafeChartContainer>
+              </div>
+        
+              <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 min-h-[300px]">
+                <h3 className="text-center font-bold text-slate-800 mb-4 text-[10px] uppercase tracking-widest text-gray-400">
+                  Par Catégorie
+                </h3>
+                <SafeChartContainer>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={barData} margin={{top:5, right:10, left: -20, bottom:5}}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9"/>
+                        <XAxis dataKey="name" tick={{fontSize:10}} axisLine={false} tickLine={false} />
+                        <YAxis tick={{fontSize:10}} axisLine={false} tickLine={false} />
+                        <Tooltip cursor={{fill: '#f8fafc'}} />
+                        <Legend />
+                        <Bar dataKey="jean" name={settings.p1Name} fill="var(--primary-color)" radius={[4, 4, 0, 0]} barSize={20} />
+                        <Bar dataKey="monique" name={settings.p2Name} fill="var(--secondary-color)" radius={[4, 4, 0, 0]} barSize={20} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                </SafeChartContainer>
+              </div>
+            </div>
+          );
       default: return null;
     }
   };
