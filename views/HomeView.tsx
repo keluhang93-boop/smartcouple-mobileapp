@@ -62,8 +62,8 @@ const HomeView: React.FC<HomeViewProps> = ({ settings, expenses, events, onNavig
         )}
       </section>
 
-      {/* Notifications for Achieved Rewards */}
-      {settings.achievedRewards.length > 0 && (
+      {/* Notifications for Achieved Rewards - Only show if module enabled */}
+      {settings.enableSmartPartage && settings.achievedRewards.length > 0 && (
         <div className="space-y-3">
           {settings.achievedRewards.slice(0, 2).map((achievement) => (
             <div key={achievement.id} className="bg-gradient-to-r from-[var(--secondary-color)] to-yellow-500 p-4 rounded-2xl shadow-lg animate-in zoom-in duration-300 relative">
@@ -89,53 +89,55 @@ const HomeView: React.FC<HomeViewProps> = ({ settings, expenses, events, onNavig
         </div>
       )}
 
-      {/* Love Points Fancy Summary */}
-      <section 
-        onClick={() => onNavigate('share')}
-        className="bg-white p-7 rounded-[2.5rem] shadow-xl border border-gray-50 active:scale-95 transition-all overflow-hidden relative"
-      >
-        <div className="absolute top-0 right-0 p-4 opacity-10">
-           <Trophy size={80} />
-        </div>
-        <div className="relative z-10">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <div className="p-2 bg-[var(--secondary-color)]/10 rounded-lg">
-                <Sparkles className="text-[var(--secondary-color)]" size={16} />
-              </div>
-              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Love Score Hebdo</h3>
-            </div>
-            <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-100 rounded-lg">
-               <Clock size={10} className="text-gray-400" />
-               <span className="text-[8px] font-bold text-gray-500 uppercase">{diffDays}j restants</span>
-            </div>
+      {/* Love Points Fancy Summary - Only show if module enabled */}
+      {settings.enableSmartPartage && (
+        <section 
+          onClick={() => onNavigate('share')}
+          className="bg-white p-7 rounded-[2.5rem] shadow-xl border border-gray-50 active:scale-95 transition-all overflow-hidden relative"
+        >
+          <div className="absolute top-0 right-0 p-4 opacity-10">
+            <Trophy size={80} />
           </div>
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2">
+                <div className="p-2 bg-[var(--secondary-color)]/10 rounded-lg">
+                  <Sparkles className="text-[var(--secondary-color)]" size={16} />
+                </div>
+                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Love Score Hebdo</h3>
+              </div>
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-100 rounded-lg">
+                <Clock size={10} className="text-gray-400" />
+                <span className="text-[8px] font-bold text-gray-500 uppercase">{diffDays}j restants</span>
+              </div>
+            </div>
 
-          <div className="flex items-end justify-between gap-4 mb-4">
-            <div className="text-center">
-              <p className="text-[8px] font-bold text-gray-400 uppercase mb-1">{settings.p1Name}</p>
-              <p className="text-3xl font-serif font-bold text-[var(--primary-color)]">{settings.p1Points}</p>
-            </div>
-            <div className="flex-1 px-4 pb-2">
-              <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden flex">
-                <div className="h-full bg-[var(--primary-color)] transition-all duration-1000" style={{ width: `${p1Ratio}%` }}></div>
-                <div className="h-full bg-[var(--secondary-color)] transition-all duration-1000" style={{ width: `${100 - p1Ratio}%` }}></div>
+            <div className="flex items-end justify-between gap-4 mb-4">
+              <div className="text-center">
+                <p className="text-[8px] font-bold text-gray-400 uppercase mb-1">{settings.p1Name}</p>
+                <p className="text-3xl font-serif font-bold text-[var(--primary-color)]">{settings.p1Points}</p>
+              </div>
+              <div className="flex-1 px-4 pb-2">
+                <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden flex">
+                  <div className="h-full bg-[var(--primary-color)] transition-all duration-1000" style={{ width: `${p1Ratio}%` }}></div>
+                  <div className="h-full bg-[var(--secondary-color)] transition-all duration-1000" style={{ width: `${100 - p1Ratio}%` }}></div>
+                </div>
+              </div>
+              <div className="text-center">
+                <p className="text-[8px] font-bold text-gray-400 uppercase mb-1">{settings.p2Name}</p>
+                <p className="text-3xl font-serif font-bold text-[var(--secondary-color)]">{settings.p2Points}</p>
               </div>
             </div>
-            <div className="text-center">
-              <p className="text-[8px] font-bold text-gray-400 uppercase mb-1">{settings.p2Name}</p>
-              <p className="text-3xl font-serif font-bold text-[var(--secondary-color)]">{settings.p2Points}</p>
+            
+            <div className="flex justify-center">
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-slate-50 rounded-full text-[8px] font-bold text-slate-400 uppercase tracking-tighter">
+                  <Trophy size={10} className="text-yellow-500" />
+                  {settings.p1Points > settings.p2Points ? settings.p1Name : settings.p2Name} est en tête !
+              </div>
             </div>
           </div>
-          
-          <div className="flex justify-center">
-             <div className="flex items-center gap-1.5 px-3 py-1 bg-slate-50 rounded-full text-[8px] font-bold text-slate-400 uppercase tracking-tighter">
-                <Trophy size={10} className="text-yellow-500" />
-                {settings.p1Points > settings.p2Points ? settings.p1Name : settings.p2Name} est en tête !
-             </div>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <div className="grid grid-cols-2 gap-4">
         <div 
