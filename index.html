@@ -37,21 +37,51 @@
     </div>
 
     <script type="module">
-        import React from 'react';
-        import ReactDOM from 'react-dom/client';
+       import React, { useState } from 'react';
+import ReactDOM from 'react-dom/client';
+import { Heart, Trophy, Info } from 'lucide-react';
 
-        console.log("App starting...");
+function App() {
+    const [points, setPoints] = useState({ partner1: 0, partner2: 0 });
 
-        function App() {
-            return React.createElement('div', { 
-                className: 'flex items-center justify-center h-screen' 
-            }, React.createElement('h1', { 
-                className: 'text-3xl font-serif gold-shine' 
-            }, '✨ Smart Couple is Live! ✨'));
-        }
+    const addPoint = (partner) => {
+        setPoints(prev => ({ ...prev, [partner]: prev[partner] + 1 }));
+    };
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(React.createElement(App));
+    return React.createElement('div', { className: 'p-6 max-w-md mx-auto' }, [
+        React.createElement('h1', { className: 'text-2xl font-serif gold-shine text-center mb-8' }, 'Système Fair Share'),
+        
+        React.createElement('div', { className: 'grid grid-cols-2 gap-4 mb-8' }, [
+            // Partner 1 Card
+            React.createElement('div', { className: 'bg-white p-4 rounded-xl shadow-sm border border-pink-100 text-center' }, [
+                React.createElement('p', { className: 'text-sm text-gray-500 mb-2' }, 'Lui'),
+                React.createElement('p', { className: 'text-4xl font-bold mb-4' }, points.partner1),
+                React.createElement('button', { 
+                    onClick: () => addPoint('partner1'),
+                    className: 'bg-pink-500 text-white px-4 py-2 rounded-lg text-sm'
+                }, '+1 Point')
+            ]),
+            // Partner 2 Card
+            React.createElement('div', { className: 'bg-white p-4 rounded-xl shadow-sm border border-blue-100 text-center' }, [
+                React.createElement('p', { className: 'text-sm text-gray-500 mb-2' }, 'Elle'),
+                React.createElement('p', { className: 'text-4xl font-bold mb-4' }, points.partner2),
+                React.createElement('button', { 
+                    onClick: () => addPoint('partner2'),
+                    className: 'bg-blue-500 text-white px-4 py-2 rounded-lg text-sm'
+                }, '+1 Point')
+            ])
+        ]),
+
+        React.createElement('div', { className: 'bg-amber-50 p-4 rounded-lg flex items-start gap-3' }, [
+            React.createElement(Info, { size: 20, className: 'text-amber-600' }),
+            React.createElement('p', { className: 'text-xs text-amber-800' }, 
+                "Chaque tâche ménagère ou attention particulière donne 1 point. À la fin de la semaine, le gagnant choisit la récompense !")
+        ])
+    ]);
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(React.createElement(App));
     </script>
 </body>
 </html>
