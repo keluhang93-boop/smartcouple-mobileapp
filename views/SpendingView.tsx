@@ -20,6 +20,10 @@ const SpendingView: React.FC<SpendingViewProps> = ({
   expenses, setExpenses, savings, setSavings, groceries, setGroceries, debts, setDebts, settings, setSettings 
 }) => {
   const [isReady, setIsReady] = useState(false);
+  
+  const [activeSubTab, setActiveSubTab] = useState<SpendingSubTab>('dépenses');
+  const [activeGroceryList, setActiveGroceryList] = useState(settings.groceryLists[0] || 'Général');
+  const [isAdding, setIsAdding] = useState(false);
 
 // Reset "ready" state when the tab changes to 'analyse'
 useEffect(() => {
@@ -29,10 +33,6 @@ useEffect(() => {
     return () => clearTimeout(timer);
   }
 }, [activeSubTab]);
-  
-  const [activeSubTab, setActiveSubTab] = useState<SpendingSubTab>('dépenses');
-  const [activeGroceryList, setActiveGroceryList] = useState(settings.groceryLists[0] || 'Général');
-  const [isAdding, setIsAdding] = useState(false);
   
   // States for Adding Items
   const [newItemName, setNewItemName] = useState('');
