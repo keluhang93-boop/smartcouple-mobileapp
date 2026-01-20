@@ -19,6 +19,17 @@ interface SpendingViewProps {
 const SpendingView: React.FC<SpendingViewProps> = ({ 
   expenses, setExpenses, savings, setSavings, groceries, setGroceries, debts, setDebts, settings, setSettings 
 }) => {
+  const [isReady, setIsReady] = useState(false);
+
+// Reset "ready" state when the tab changes to 'analyse'
+useEffect(() => {
+  if (activeSubTab === 'analyse') {
+    setIsReady(false);
+    const timer = setTimeout(() => setIsReady(true), 150); // 150ms delay
+    return () => clearTimeout(timer);
+  }
+}, [activeSubTab]);
+  
   const [activeSubTab, setActiveSubTab] = useState<SpendingSubTab>('dépenses');
   const [activeGroceryList, setActiveGroceryList] = useState(settings.groceryLists[0] || 'Général');
   const [isAdding, setIsAdding] = useState(false);
@@ -235,48 +246,52 @@ const SpendingView: React.FC<SpendingViewProps> = ({
           </div>
         );
      case 'analyse':
-        // 1. Logic for data
-        const pieData = [{ name: settings.p1Name, value: totalJean, color: 'var(--primary-color)' }, { name: settings.p2Name, value: totalMonique, color: 'var(--secondary-color)' }];
+        const pieData = [
+          { name: settings.p1Name, value: totalJean, color: 'var(--primary-color)' }, 
+          { name: settings.p2Name, value: totalMonique, color: 'var(--secondary-color)' }
+        ];
         const barData = [
            { name: 'Foyer', jean: expenses.filter(e => e.category === 'Foyer').reduce((s,x)=>s+x.jean,0), monique: expenses.filter(e => e.category === 'Foyer').reduce((s,x)=>s+x.monique,0) },
-           { name: 'Loisirs', jean: expenses.filter(e => e.category === 'Loisirs').reduce((s,x)=>s+x.loisirs,0), monique: expenses.filter(e => e.category === 'Loisirs').reduce((s,x)=>s+x.monique,0) },
+           { name: 'Loisirs', jean: expenses.filter(e => e.category === 'Loisirs').reduce((s,x)=>s+x.jean,0), monique: expenses.filter(e => e.category === 'Loisirs').reduce((s,x)=>s+x.monique,0) },
            { name: 'Courses', jean: expenses.filter(e => e.category === 'Courses').reduce((s,x)=>s+x.jean,0), monique: expenses.filter(e => e.category === 'Courses').reduce((s,x)=>s+x.monique,0) },
            { name: 'Transport', jean: expenses.filter(e => e.category === 'Transport').reduce((s,x)=>s+x.jean,0), monique: expenses.filter(e => e.category === 'Transport').reduce((s,x)=>s+x.monique,0) },
         ].filter(d => d.jean > 0 || d.monique > 0);
 
         return (
-          <div className="space-y-6 pb-10 animate-in fade-in duration-500">
-             {/* Global Distribution Chart */}
-             <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+          <div className="space-y-6 pb-10">
+             <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 min-h-[300px] flex flex-col justify-center">
                <h3 className="text-center font-bold text-slate-800 mb-4 text-[10px] uppercase tracking-widest text-gray-400">Répartition Globale</h3>
-               <div style={{ width: '100%', height: 250, minWidth: 0 }}>
-                 <ResponsiveContainer width="100%" height="100%" debounce={50}>
-                   <RePieChart>
-                     <Pie data={pieData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                       {pieData.map((e, i) => <Cell key={`cell-${i}`} fill={e.color} />)}
-                     </Pie>
-                     <Tooltip />
-                     <Legend verticalAlign="bottom" />
-                   </RePieChart>
-                 </ResponsiveContainer>
+               <div style={{ width: '100%', height: 250 }}>
+                 {isReady && (
+                   <ResponsiveContainer width="100%" height="100%">
+                     <RePieChart>
+                       <Pie data={pieData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
+                         {pieData.map((e, i) => <Cell key={`cell-${i}`} fill={e.color} />)}
+                       </Pie>
+                       <Tooltip />
+                       <Legend verticalAlign="bottom" />
+                     </RePieChart>
+                   </ResponsiveContainer>
+                 )}
                </div>
              </div>
 
-             {/* Category Bar Chart */}
-             <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+             <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 min-h-[300px] flex flex-col justify-center">
                <h3 className="text-center font-bold text-slate-800 mb-4 text-[10px] uppercase tracking-widest text-gray-400">Par Catégorie</h3>
-               <div style={{ width: '100%', height: 250, minWidth: 0 }}>
-                 <ResponsiveContainer width="100%" height="100%" debounce={50}>
-                   <BarChart data={barData} margin={{top:5, right:10, left: -20, bottom:5}}>
-                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9"/>
-                     <XAxis dataKey="name" tick={{fontSize:10}} axisLine={false} tickLine={false} />
-                     <YAxis tick={{fontSize:10}} axisLine={false} tickLine={false} />
-                     <Tooltip cursor={{fill: '#f8fafc'}} />
-                     <Legend />
-                     <Bar dataKey="jean" name={settings.p1Name} fill="var(--primary-color)" radius={[4, 4, 0, 0]} barSize={20} />
-                     <Bar dataKey="monique" name={settings.p2Name} fill="var(--secondary-color)" radius={[4, 4, 0, 0]} barSize={20} />
-                   </BarChart>
-                 </ResponsiveContainer>
+               <div style={{ width: '100%', height: 250 }}>
+                 {isReady && (
+                   <ResponsiveContainer width="100%" height="100%">
+                     <BarChart data={barData} margin={{top:5, right:10, left: -20, bottom:5}}>
+                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9"/>
+                       <XAxis dataKey="name" tick={{fontSize:10}} axisLine={false} tickLine={false} />
+                       <YAxis tick={{fontSize:10}} axisLine={false} tickLine={false} />
+                       <Tooltip cursor={{fill: '#f8fafc'}} />
+                       <Legend />
+                       <Bar dataKey="jean" name={settings.p1Name} fill="var(--primary-color)" radius={[4, 4, 0, 0]} barSize={20} />
+                       <Bar dataKey="monique" name={settings.p2Name} fill="var(--secondary-color)" radius={[4, 4, 0, 0]} barSize={20} />
+                     </BarChart>
+                   </ResponsiveContainer>
+                 )}
                </div>
              </div>
           </div>
