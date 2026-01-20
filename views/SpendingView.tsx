@@ -245,7 +245,7 @@ useEffect(() => {
             </div>
           </div>
         );
-     case 'analyse':
+    case 'analyse':
   const pieData = [
     { name: settings.p1Name, value: totalJean, color: 'var(--primary-color)' }, 
     { name: settings.p2Name, value: totalMonique, color: 'var(--secondary-color)' }
@@ -259,12 +259,12 @@ useEffect(() => {
 
   return (
     <div className="space-y-6 pb-10">
-      {/* --- FIRST CHART: Pie Chart --- */}
-      <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 min-h-[300px] flex flex-col justify-center">
+      {/* Chart 1 */}
+      <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 min-h-[350px] flex flex-col items-center justify-center">
         <h3 className="text-center font-bold text-slate-800 mb-4 text-[10px] uppercase tracking-widest text-gray-400">Répartition Globale</h3>
-        <div style={{ width: '100%', height: 250 }}>
-          {isReady && (
-            <ResponsiveContainer width="100%" height="100%" minHeight={250} debounce={100}>
+        <div className="w-full" style={{ minWidth: '100%', height: 250 }}>
+            {/* We use a fixed height here to satisfy Recharts immediately */}
+            <ResponsiveContainer width="100%" height={250}>
               <RePieChart>
                 <Pie data={pieData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
                   {pieData.map((e, i) => <Cell key={`cell-${i}`} fill={e.color} />)}
@@ -273,16 +273,14 @@ useEffect(() => {
                 <Legend verticalAlign="bottom" />
               </RePieChart>
             </ResponsiveContainer>
-          )}
         </div>
       </div>
 
-      {/* --- SECOND CHART: Bar Chart --- */}
-      <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 min-h-[300px] flex flex-col justify-center">
+      {/* Chart 2 */}
+      <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 min-h-[350px] flex flex-col items-center justify-center">
         <h3 className="text-center font-bold text-slate-800 mb-4 text-[10px] uppercase tracking-widest text-gray-400">Par Catégorie</h3>
-        <div style={{ width: '100%', height: 250 }}>
-          {isReady && (
-            <ResponsiveContainer width="100%" height="100%" minHeight={250} debounce={100}>
+        <div className="w-full" style={{ minWidth: '100%', height: 250 }}>
+            <ResponsiveContainer width="100%" height={250}>
               <BarChart data={barData} margin={{top:5, right:10, left: -20, bottom:5}}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9"/>
                 <XAxis dataKey="name" tick={{fontSize:10}} axisLine={false} tickLine={false} />
@@ -293,7 +291,6 @@ useEffect(() => {
                 <Bar dataKey="monique" name={settings.p2Name} fill="var(--secondary-color)" radius={[4, 4, 0, 0]} barSize={20} />
               </BarChart>
             </ResponsiveContainer>
-          )}
         </div>
       </div>
     </div>
