@@ -1,4 +1,3 @@
-
 export type ViewType = 'home' | 'spending' | 'planning' | 'union' | 'share' | 'profile';
 export type SpendingSubTab = 'dépenses' | 'économies' | 'courses' | 'dettes' | 'analyse';
 
